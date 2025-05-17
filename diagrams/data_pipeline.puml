@@ -7,6 +7,7 @@ footer Disponível em https://github.com/acnaweb/mackenzie-2025-1
 LAYOUT_LANDSCAPE()
 
 Person(user, "Usuário")
+Person(user_business, "Usuário Business")
 
 System_Boundary(oltp, "OLTP"){
     Container(frontend, "Frontend", "Angular", "Web App de interação")
@@ -18,6 +19,8 @@ System_Boundary(data_sources, "Fontes de Dados Externos"){
     Container(ibje, "API", "API IBGE")
     Container(correio, "Geo", "csv")
     Container(erp, "ERP", "db2", "SAP")
+    Container(scraping, "Web Scraping")
+    Container(pdf, "PDF")
     ContainerQueue(iot, "Sensores", "Armazem de distribuicao")
 }
 
@@ -28,11 +31,18 @@ System_Boundary(analytics, "Analytics"){
 
 System_Boundary(olap, "OLAP"){
     Container(job, "Ingestão de Dados")
+    ContainerDb(objetct_storage, "S3", "Object Storage")
     ContainerDb(dw, "DataWarehouse", "BigQuery/Snowflake/Redshitf/Exadata")
-    Rel(job, dw, "Salvar dados da origem")
-}
+    Container(transformation, "transformacao de daods" ) 
+    Rel(extration, dw, "Salvar dados da origem")
+    Rel(extration, objetct_storage, "Salvar arquivos")
+    Rel(dw, transformation, "Transformar dados")
+    Rel(objetct_storage, transformation, "Transformar dados")
+}   
 
 Rel(user, frontend, "Realizar pedidos")
+Rel(user_business, dataviz, "Obter Insights")
+
 Rel(frontend, api, "Consumir endpoints")
 Rel(api, db, "Persistir dados")
 Rel(db, job, "Carregar dados da origem")
@@ -40,6 +50,8 @@ Rel(ibje, job, "Carregar dados da origem")
 Rel(correio, job, "Carregar dados da origem")
 Rel(erp, job, "Carregar dados da origem")
 Rel(iot, job, "Carregar dados da origem")
+Rel(pdf, job, "Carregar dados da origem")
+Rel(scraping, job, "Carregar dados da origem")
 Rel(dw, dataviz, "Vizualizar Dashboards e Insigts")
 BiRel(dw, ml, "Treinar modelos de Machine Learning ")
 
