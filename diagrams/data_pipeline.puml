@@ -14,6 +14,18 @@ System_Boundary(oltp, "OLTP"){
     ContainerDb(db, "Database", "Oracle")
 }
 
+System_Boundary(data_sources, "Fontes de Dados Externos"){
+    Container(ibje, "API", "API IBGE")
+    Container(correio, "Geo", "csv")
+    Container(erp, "ERP", "db2", "SAP")
+    ContainerQueue(iot, "Sensores", "Armazem de distribuicao")
+}
+
+System_Boundary(analytics, "Analytics"){
+    Container(dataviz, "PowerBI/Tables", "Data Viz")
+    Container(ml, "Machine Learning", "Predicoes")
+}
+
 System_Boundary(olap, "OLAP"){
     Container(job, "Ingestão de Dados")
     ContainerDb(dw, "DataWarehouse", "BigQuery/Snowflake/Redshitf/Exadata")
@@ -24,5 +36,11 @@ Rel(user, frontend, "Realizar pedidos")
 Rel(frontend, api, "Consumir endpoints")
 Rel(api, db, "Persistir dados")
 Rel(db, job, "Carregar dados da origem")
+Rel(ibje, job, "Carregar dados da origem")
+Rel(correio, job, "Carregar dados da origem")
+Rel(erp, job, "Carregar dados da origem")
+Rel(iot, job, "Carregar dados da origem")
+Rel(dw, dataviz, "Vizualizar Dashboards e Insigts")
+BiRel(dw, ml, "Treinar modelos de Machine Learning ")
 
 @enduml
